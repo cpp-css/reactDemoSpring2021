@@ -7,8 +7,7 @@ import Post from "./components/Post/Post.component";
 import Comment from "./components/Comment/Comment.component";
 import CommentInput from "./components/CommentInput/CommentInput.component";
 
-const userId = 4;
-const postId = 1;
+const postId = 100;
 axios.defaults.baseURL = 'https://jsonplaceholder.typicode.com';
 
 function App() {
@@ -23,7 +22,11 @@ function App() {
     }
     
     const onSubmit = () => {
-        setComments([...comments, newComment]);
+        axios.post(`posts/${postId}/comments`, newComment)
+        .then(response => {
+            setComments([...comments, response.data]);
+        })
+
         setNewComment({
             email: "",
             name: "",
@@ -32,27 +35,33 @@ function App() {
     }
 
     useEffect(() => {
-        axios.all([
-            axios.get(`/users/${userId}`),
-            axios.get(`/posts/${postId}`)
-        ])
-        .then(axios.spread((user, post) => {
-            document.title = user.data.name + "'s Blog"
-            setPost(post.data);
-            setUser(user.data);
-        }))
+
+        axios.get(`/posts/${postId}`)
+        .then(response => {
+            setPost(response.data);
+        })
         .catch(error => {
             console.log(error);
         })
 
-        axios.get(`/comments?postId=${postId}`)
+        axios.get(`posts/${postId}/comments`)
         .then(response => {
             setComments(response.data);
         })
         .catch(error => {
             console.log(error);
         })
-    }, [])
+
+        axios.get(`/users/${post.userId}`)
+        .then(response => {
+            setUser(response.data);
+            document.title = user.name + "'s Blog";
+        })
+        .catch(error => {
+            console.log(error);
+        })
+
+    }, [post.userId, user.name])
 
     return (
         <div className="App container">
