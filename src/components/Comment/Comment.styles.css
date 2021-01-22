@@ -1,0 +1,14 @@
+.comment_container {
+    padding: 1rem;
+    background-color: #1a1a1a;
+}
+
+.comment_name {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.comment_email {
+    color: #d1d1d1a9;
+    font-size: 0.9rem;
+}
