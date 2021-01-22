@@ -4,39 +4,65 @@ import axios from "axios";
 import './App.css';
 
 import Post from "./components/Post/Post.component";
+import Comment from "./components/Comment/Comment.component";
+import CommentInput from "./components/CommentInput/CommentInput.component";
 
 const userId = 4;
+const postId = 1;
 axios.defaults.baseURL = 'https://jsonplaceholder.typicode.com';
 
 function App() {
 
-    const [posts, setPosts] = useState([]);
+    const [post, setPost] = useState({});
     const [user, setUser] = useState([]);
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState({});
 
-    const populateBlog = posts.map(data => {
-        return <Post key={data.id} title={data.title} body={data.body} userId={data.userId} postId={data.id}/>
-    })
+    const handleOnChange = (event) => {
+        setNewComment({...newComment, [event.target.name]: event.target.value});
+    }
+    
+    const onSubmit = () => {
+        setComments([...comments, newComment]);
+        setNewComment({
+            email: "",
+            name: "",
+            body: ""
+        });
+    }
 
     useEffect(() => {
         axios.all([
             axios.get(`/users/${userId}`),
-            axios.get(`/users/${userId}/posts`)
+            axios.get(`/posts/${postId}`)
         ])
-        .then(axios.spread((user, posts) => {
+        .then(axios.spread((user, post) => {
             document.title = user.data.name + "'s Blog"
-            setPosts(posts.data);
+            setPost(post.data);
             setUser(user.data);
         }))
         .catch(error => {
             console.log(error);
         })
+
+        axios.get(`/comments?postId=${postId}`)
+        .then(response => {
+            setComments(response.data);
+        })
+        .catch(error => {
+            console.log(error);
+        })
     }, [])
-    // Leaving the second argument blank will run useEffect once.
 
     return (
         <div className="App container">
             <h1 className="user_name"> {user.name}'s Blog </h1>
-            {populateBlog}
+            <Post title={post.title} body={post.body} userId={post.userId} postId={post.id}/>
+            <div className="comment_header"> Comments </div>
+            <CommentInput entry={newComment} onChange={handleOnChange} onSubmit={onSubmit}/>
+            {comments.map(data => {
+                return <Comment key={data.id} id={data.id} name={data.name} email={data.email} body={data.body}/>
+            })}
         </div>
     );
 }
