@@ -38,6 +38,7 @@ function App() {
 
         axios.get(`/posts/${postId}`)
         .then(response => {
+            console.log(response.data);
             setPost(response.data);
         })
         .catch(error => {
@@ -68,10 +69,10 @@ function App() {
             <h1 className="user_name"> {user.name}'s Blog </h1>
             <Post title={post.title} body={post.body} userId={post.userId} postId={post.id}/>
             <div className="comment_header"> Comments </div>
-            <CommentInput entry={newComment} onChange={handleOnChange} onSubmit={onSubmit}/>
             {comments.map(data => {
                 return <Comment key={data.id} id={data.id} name={data.name} email={data.email} body={data.body}/>
             })}
+            <CommentInput entry={newComment} onChange={handleOnChange} onSubmit={onSubmit}/>
         </div>
     );
 }
