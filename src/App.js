@@ -34,34 +34,37 @@ function App() {
         });
     }
 
-    useEffect(() => {
-
-        axios.get(`/posts/${postId}`)
-        .then(response => {
-            console.log(response.data);
+    async function fetchPost(postId) {
+        try {
+            const response = await axios.get(`/posts/${postId}`);
             setPost(response.data);
-        })
-        .catch(error => {
-            console.log(error);
-        })
+        } catch(error) {
+            console.error(error);
+        }
+    }
 
-        axios.get(`posts/${postId}/comments`)
-        .then(response => {
+    async function fetchComments(postId) {
+        try {
+            const response = await axios.get(`/posts/${postId}/comments`);
             setComments(response.data);
-        })
-        .catch(error => {
-            console.log(error);
-        })
+        } catch(error) {
+            console.error(error);
+        }
+    }
 
-        axios.get(`/users/${post.userId}`)
-        .then(response => {
+    async function fetchUser(userId) {
+        try {
+            const response = await axios.get(`/users/${userId}`);
             setUser(response.data);
-            document.title = user.name + "'s Blog";
-        })
-        .catch(error => {
-            console.log(error);
-        })
-
+        } catch(error) {
+            console.error(error);
+        }
+    }
+    useEffect(() => {
+        fetchPost(postId);
+        fetchComments(postId);
+        fetchUser(post.userId);
+        document.title = user.name + "'s Blog";
     }, [post.userId, user.name])
 
     return (
